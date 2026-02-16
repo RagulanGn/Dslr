@@ -51,5 +51,11 @@ def main(path:str):
 	return
 
 if __name__ == "__main__":
-	# Check args
-	main(sys.argv[1])
+	if (len(sys.argv) != 2):
+		sys.exit("Wrong number of arguments")
+	try:
+		main(sys.argv[1])
+	except:
+		print("File not found")
+  
+# Better arg checking ?
