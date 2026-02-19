@@ -42,12 +42,21 @@ def ft_max(col):
             max = i
     return  max
 
+def ft_range(col):
+    return (ft_max(col) - ft_min(col))
+
+def ft_iqr(col):
+    return (ft_quartile75(col) - ft_quartile50(col))
+
 def main(path:str):
 	df = pd.read_csv(path, index_col=0)
-	print(df)
-	df2 = df.select_dtypes(include=np.number).dropna(axis=1, how='all')
+	# print(df)
+	df = df.select_dtypes(include=np.number).dropna(axis=1, how='all')
 	# print(df.to_string())
-	print(df2.agg([ft_count, ft_mean, ft_std, ft_min, ft_quartile25, ft_quartile50, ft_quartile75, ft_max]).to_string())
+	index = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max", "Range", "IQR"]
+	df = df.agg([ft_count, ft_mean, ft_std, ft_min, ft_quartile25, ft_quartile50, ft_quartile75, ft_max, ft_range, ft_iqr])
+	df.index = index	
+	print(df.to_string())
 	return
 
 if __name__ == "__main__":

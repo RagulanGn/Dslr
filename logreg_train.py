@@ -17,9 +17,13 @@ def main(path):
 	df1 = pd.read_csv(path, index_col=0)
 	df2 = df1.set_index("Hogwarts House", append=True) #Add Hogwart House as index
 	# df = df2.select_dtypes(include=np.number).dropna(axis=1, how='all') #Drop every NaN columns
-	df = df2.select_dtypes(include=np.number).dropna(axis=1, how='all').dropna() #Drop every NaN columns
+	df = df2.select_dtypes(include=np.number).dropna(axis=1, how='all') #Drop every NaN columns
+	df = df.fillna(df.mean())
 	#Solution against NaN => drop the entire row. Should I found a better solution ?
-	df = (df - df.mean()) / df.std() #Standardization to avoid overflow
+	mean = df.mean()
+	std = df.std()
+	df = (df - mean) / std #Standardization to avoid overflow
+	# print(df)
 	a = 0.01
 	b1 = np.ones(13) * 0.1
 	b2 = np.ones(13) * 0.1
@@ -36,7 +40,8 @@ def main(path):
 		if i == 1000 :
 			break
 		i += 1
-	weight = pd.DataFrame({"Ravenclaw": b1, "Slytherin": b2, "Gryffindor":b3, "Hufflepuff":b4})
+	weight = pd.DataFrame({"Ravenclaw": b1, "Slytherin": b2, "Gryffindor":b3, "Hufflepuff":b4, "mean":mean, "std":std})
+	# weight = pd.DataFrame({"Ravenclaw": b1, "Slytherin": b2, "Gryffindor":b3, "Hufflepuff":b4})
 	weight.to_csv("weight.csv")
 	return
 
