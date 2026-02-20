@@ -3,45 +3,58 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 
+def print_error_class(result, dataset):
+	""" Custom function to display all the difference between prediction and reality"""
+	index = dataset.index.get_level_values("Hogwarts House").to_numpy()
+	for i in range(len(index)):
+		if ((result.values[i] != index[i])):
+			print(f"dataset : {index[i]} / prediction : {result.values[i]}")
+
+# sigmoide (Dataset . weight) (produit scalaire) => Plus x est grand ou petit plus le resultat est sur
+# Donc faire l'operation sur les 4 classe (4 poids) et prendre le plus grand
+# Pas besoin de la sigmoide car on travaille sur une fonction croissante
 
 def main(dataset_path, weight_path):
 	weight = pd.read_csv(weight_path, index_col=0)
+	
 	mean = weight["mean"]
-	weight.drop("mean", axis=1, inplace=True)
 	std = weight["std"]
+	weight.drop("mean", axis=1, inplace=True)
 	weight.drop("std", axis=1, inplace=True)
 	
 	dataset = pd.read_csv(dataset_path, index_col=0)
 	dataset = dataset.dropna(axis=1, how='all')
 	dataset = dataset[int(len(dataset.index) * 0.8):]
-	hogwart_house = 'Hogwarts House' in dataset
-	if (hogwart_house):
-		dataset.set_index("Hogwarts House", append=True, inplace=True) #Add Hogwart House as index
-	#Should I drop NaN rows
-	dataset = dataset.select_dtypes(include=np.number) #Drop every NaN columns and any NaN row
-	# dataset = dataset.drop(columns=["Arithmancy", "Astronomy", "Care of Magical Creatures", "Potions"])
-	dataset = dataset.drop(columns=["Arithmancy", "Muggle Studies", "History of Magic","Care of Magical Creatures", "Potions"])
-
-	dataset.fillna(mean, inplace=True)
-	dataset = (dataset - mean) / std #Standardization to avoid overflow
-	dataset["biais"] = 1
-	# sigmoide (Dataset . weight) (produit scalaire) => Plus x est grand ou petit plus le resultat est sur
-	# Donc faire l'operation sur les 4 classe (4 poids) et prendre le plus grand
-	# Pas besoin de la sigmoide car on travaille sur une fonction croissante
-	
  
-	result = dataset @ weight
-	result = result.rename(columns={1: "Hogwarts House"})
-	result = result.idxmax(axis=1)
-	result.to_csv("result.csv")
-	print(result.to_string())
+	hogwart_house = 'Hogwarts House' in dataset											#If training set
 	if (hogwart_house):
+		dataset.set_index("Hogwarts House", append=True, inplace=True)					#Add Hogwart House as index
+	
+	dataset = dataset.select_dtypes(include=np.number)
+	dataset = dataset.drop(columns=["Arithmancy", "Care of Magical Creatures"])
+
+	dataset.fillna(mean, inplace=True)													#Replace na by mean of training dataset
+	dataset = (dataset - mean) / std													#Standardization to avoid overflow
+	dataset["bias"] = 1																	#Redefine bias (it became Nan because of standardization on dataframe)
+
+	result = dataset @ weight															# Matrix Muliplication to apply weight to each features of student => result his a (?, 4) each column as a score the higher the score is more likely the student belong to class
+	
+	result = result.idxmax(axis=1)														# Give the index of the max value along rows in a Series
+	result.name = "Hogwarts House"														# Rename Series to have the correct format
+	if (hogwart_house):																	#If training set
 		index = dataset.index.get_level_values("Hogwarts House").to_numpy()
 		print(f"Score based on training set : {accuracy_score(result.values, index)}")
+		result = result.reset_index(level=1, drop=True)
+		# print_error_class(result, dataset)
+	result.to_csv("houses.csv")
 	return
 
 if __name__ == "__main__":
 	main(sys.argv[1], sys.argv[2])
+
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 # Fill Both with 0 (0.961875)
 # Fill only test 0 (0.960625)
@@ -53,3 +66,22 @@ if __name__ == "__main__":
 # dataset = dataset.drop(columns=["Arithmancy", "Astronomy", "Care of Magical Creatures", "Potions"])
 
 #0.9718
+
+
+# dataset : Slytherin / prediction : Ravenclaw
+# dataset : Slytherin / prediction : Ravenclaw
+# dataset : Slytherin / prediction : Ravenclaw
+# dataset : Slytherin / prediction : Hufflepuff
+# dataset : Gryffindor / prediction : Hufflepuff
+# dataset : Gryffindor / prediction : Hufflepuff
+# dataset : Gryffindor / prediction : Ravenclaw
+# dataset : Gryffindor / prediction : Ravenclaw
+# dataset : Ravenclaw / prediction : Hufflepuff
+
+# 4 * Ravenclaw instead of 	Slytherin
+# 1 * Hufflepuff instead of Slytherin
+# 2 * Hufflepuff instead of Gryffindor
+# 2 * Ravenclaw instead of  Gryffindor
+# 1 * Hufflepuff instead of Ravenclaw
+
+# ==> Meaning my model is detecting too much Ravenclaw and Hufflepuff ==> maybe because they are overrepresented inside th training

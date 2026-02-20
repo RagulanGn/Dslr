@@ -28,7 +28,7 @@ def main(path:str):
 	for col in df3.columns:
 		axs[i // 4, i % 4].hist(df_Ravenclaw[col], alpha=0.7)
 		axs[i // 4, i % 4].hist(df_Slytherin[col], alpha=0.7)
-		axs[i // 4, i % 4].hist(df_Hufflepuff[col], alpha=0.7)ds 
+		axs[i // 4, i % 4].hist(df_Hufflepuff[col], alpha=0.7)
 		axs[i // 4, i % 4].hist(df_Gryffindor[col], alpha=0.7)
 		axs[i // 4, i % 4].set_title(col)
 		i += 1
