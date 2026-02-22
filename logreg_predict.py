@@ -24,7 +24,7 @@ def main(dataset_path, weight_path):
 	
 	dataset = pd.read_csv(dataset_path, index_col=0)
 	dataset = dataset.dropna(axis=1, how='all')
-	dataset = dataset[int(len(dataset.index) * 0.8):]
+	# dataset = dataset[int(len(dataset.index) * 0.8):]
  
 	hogwart_house = 'Hogwarts House' in dataset											#If training set
 	if (hogwart_house):
