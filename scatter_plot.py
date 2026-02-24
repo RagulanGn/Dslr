@@ -109,10 +109,6 @@ def main():
     plt.savefig(output_name)
     print(f"Plot saved as {output_name}")
     
-    try:
-        plt.show()
-    except Exception:
-        print("Non-interactive environment detected: skipping window display.")
 
 if __name__ == "__main__":
     main()

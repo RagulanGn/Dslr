@@ -81,10 +81,5 @@ def main():
     plt.savefig(output_file)
     print(f"Histograms saved successfully to {output_file}")
     
-    try:
-        plt.show()
-    except Exception:
-        print("Non-interactive environment: plot window display skipped.")
-
 if __name__ == "__main__":
     main()
