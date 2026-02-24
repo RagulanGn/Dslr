@@ -22,8 +22,18 @@ def sigmoide(x):
     x_safe = np.clip(x, -500, 500)
     return (1/(1 + np.exp(-x_safe)))
 
-def main(path):
-	df1 = pd.read_csv(path, index_col=0)																					#Read CSV
+def main():
+	try:
+		if len(sys.argv) != 2:
+			print("No dataset path, usage : python program_name dataset_path")
+			sys.exit(1)
+		path = sys.argv[1]
+		df1 = pd.read_csv(path, index_col=0)
+
+	except (FileNotFoundError, PermissionError, pd.errors.EmptyDataError, pd.errors.ParserError):
+		print("Incorrect path or file.")
+		sys.exit(1)
+
 	df2 = df1.set_index("Hogwarts House", append=True)																		#Append Hogwart House as index (Multi-Index)
 	df = df2.select_dtypes(include=np.number).dropna(axis=1, how='all')														#Drop every NaN columns 
 	df = df.drop(columns=["Arithmancy", "Care of Magical Creatures"])														#Drop 2 columns because they are not vector of any information but create noise
@@ -32,7 +42,7 @@ def main(path):
 	mean = df.mean()
 	std = df.std()
 	df = (df - mean) / std																									#Standardization to avoid overflow
-	df = df[:int(len(df.index) * 0.8)]																						#Take 80% of train to allows to evaluate our model with the other 20% (Calculate accuracy score)
+	# df = df[:int(len(df.index) * 0.8)]																					#Take 80% of train to allows to evaluate our model with the other 20% (Calculate accuracy score)
 	df.insert(0, 'bias', 1)																									#Bias to not force our model to pass by origin
 
 	a = 0.001																												#Learning rate
@@ -50,12 +60,12 @@ def main(path):
 	weight.to_csv("weight.csv") #Save to csv
 	return
 
-print(sigmoide.__doc__)
 if __name__ == "__main__":
-	try:
-		main(sys.argv[1])
-	except Exception:
-		traceback.print_exc()
+	main()
+	# try:
+	# 	main(sys.argv[1])
+	# except Exception:
+	# 	traceback.print_exc()
 
 # 0.971875
 

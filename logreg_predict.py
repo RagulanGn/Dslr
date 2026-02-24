@@ -14,15 +14,25 @@ def print_error_class(result, dataset):
 # Donc faire l'operation sur les 4 classe (4 poids) et prendre le plus grand
 # Pas besoin de la sigmoide car on travaille sur une fonction croissante
 
-def main(dataset_path, weight_path):
-	weight = pd.read_csv(weight_path, index_col=0)
+def main():
+	try:
+		if len(sys.argv) != 2:
+			print("No dataset path, usage : python program_name dataset_path")
+			sys.exit(1)
+		dataset_path = sys.argv[1]
+		weight_path = sys.argv[2]
+		dataset = pd.read_csv(dataset_path, index_col=0)
+		weight = pd.read_csv(weight_path, index_col=0)
+
+	except (FileNotFoundError, PermissionError, pd.errors.EmptyDataError, pd.errors.ParserError):
+		print("Incorrect path or file.")
+		sys.exit(1)
 	
 	mean = weight["mean"]
 	std = weight["std"]
 	weight.drop("mean", axis=1, inplace=True)
 	weight.drop("std", axis=1, inplace=True)
 	
-	dataset = pd.read_csv(dataset_path, index_col=0)
 	dataset = dataset.dropna(axis=1, how='all')
 	# dataset = dataset[int(len(dataset.index) * 0.8):]
  
@@ -50,7 +60,7 @@ def main(dataset_path, weight_path):
 	return
 
 if __name__ == "__main__":
-	main(sys.argv[1], sys.argv[2])
+	main()
 
 
 
