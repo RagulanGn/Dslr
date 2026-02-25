@@ -34,6 +34,8 @@ def main():
 		print("Incorrect path or file.")
 		sys.exit(1)
 
+	df1 = df1.sample(frac=1, random_state=46).reset_index(drop=True) # Reset index to avoid issues with loc/iloc mixing
+
 	df2 = df1.set_index("Hogwarts House", append=True)																		#Append Hogwart House as index (Multi-Index)
 	df = df2.select_dtypes(include=np.number).dropna(axis=1, how='all')														#Drop every NaN columns 
 	df = df.drop(columns=["Arithmancy", "Care of Magical Creatures"])														#Drop 2 columns because they are not vector of any information but create noise
@@ -42,7 +44,7 @@ def main():
 	mean = df.mean()
 	std = df.std()
 	df = (df - mean) / std																									#Standardization to avoid overflow
-	# df = df[:int(len(df.index) * 0.8)]																					#Take 80% of train to allows to evaluate our model with the other 20% (Calculate accuracy score)
+	df = df[:int(len(df.index) * 0.8)]																					#Take 80% of train to allows to evaluate our model with the other 20% (Calculate accuracy score)
 	df.insert(0, 'bias', 1)																									#Bias to not force our model to pass by origin
 
 	a = 0.001																												#Learning rate

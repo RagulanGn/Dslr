@@ -16,8 +16,8 @@ def print_error_class(result, dataset):
 
 def main():
 	try:
-		if len(sys.argv) != 2:
-			print("No dataset path, usage : python program_name dataset_path")
+		if len(sys.argv) != 3:
+			print("No dataset path, usage : python program_name dataset_path weight_path")
 			sys.exit(1)
 		dataset_path = sys.argv[1]
 		weight_path = sys.argv[2]
@@ -33,8 +33,10 @@ def main():
 	weight.drop("mean", axis=1, inplace=True)
 	weight.drop("std", axis=1, inplace=True)
 	
+	dataset = dataset.sample(frac=1, random_state=46).reset_index(drop=True) # Reset index to avoid issues with loc/iloc mixing
+
 	dataset = dataset.dropna(axis=1, how='all')
-	# dataset = dataset[int(len(dataset.index) * 0.8):]
+	dataset = dataset[int(len(dataset.index) * 0.8):]
  
 	hogwart_house = 'Hogwarts House' in dataset											#If training set
 	if (hogwart_house):
