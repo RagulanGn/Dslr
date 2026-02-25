@@ -107,6 +107,7 @@ def main():
     # Save the plot for environments without GUI
     output_name = "scatter_plot.png"
     plt.savefig(output_name)
+    plt.show()
     print(f"Plot saved as {output_name}")
     
 

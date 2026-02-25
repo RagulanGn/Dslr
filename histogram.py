@@ -32,7 +32,7 @@ def main():
     n_cols = 4
     n_rows = (len(numeric_cols) + n_cols - 1) // n_cols
     
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(22, 5 * n_rows))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(22, 5 * n_rows), gridspec_kw={"wspace": 0.3, "hspace": 0.4})
     axes = axes.flatten()
     
     houses = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
@@ -74,11 +74,12 @@ def main():
         axes[j].axis('off')
 
     # Final layout adjustments
-    plt.tight_layout()
+    # plt.tight_layout()
     
     # Output management
     output_file = "histogram.png"
     plt.savefig(output_file)
+    plt.show()
     print(f"Histograms saved successfully to {output_file}")
     
 if __name__ == "__main__":

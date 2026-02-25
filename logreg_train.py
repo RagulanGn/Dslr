@@ -17,6 +17,17 @@ import traceback
 
 
 #If we want to start the b at 0 we need to take care of dividing by 0
+def ft_count(col):
+    return (col.notna().sum())
+
+def ft_mean(col):
+    return col.sum() / ft_count(col)
+
+def ft_std(col):
+    mean = ft_mean(col)
+    d2 = abs(col - mean) ** 2
+    return (d2.sum() / (ft_count(col) - 1)) ** 0.5
+
 def sigmoide(x):
     """ Return the value of the sigmoide function at point x """
     x_safe = np.clip(x, -500, 500)
@@ -34,17 +45,19 @@ def main():
 		print("Incorrect path or file.")
 		sys.exit(1)
 
-	df1 = df1.sample(frac=1, random_state=46).reset_index(drop=True) # Reset index to avoid issues with loc/iloc mixing
+	# df1 = df1.sample(frac=1, random_state=46).reset_index(drop=True) # Reset index to avoid issues with loc/iloc mixing
 
 	df2 = df1.set_index("Hogwarts House", append=True)																		#Append Hogwart House as index (Multi-Index)
 	df = df2.select_dtypes(include=np.number).dropna(axis=1, how='all')														#Drop every NaN columns 
 	df = df.drop(columns=["Arithmancy", "Care of Magical Creatures"])														#Drop 2 columns because they are not vector of any information but create noise
 	df = df.fillna(df.median())																								#Replace NaN with median
  
-	mean = df.mean()
-	std = df.std()
+	# mean = df.mean()
+	# std = df.std()
+	mean = ft_mean(df)
+	std = ft_std(df)
 	df = (df - mean) / std																									#Standardization to avoid overflow
-	df = df[:int(len(df.index) * 0.8)]																					#Take 80% of train to allows to evaluate our model with the other 20% (Calculate accuracy score)
+	# df = df[:int(len(df.index) * 0.8)]																					#Take 80% of train to allows to evaluate our model with the other 20% (Calculate accuracy score)
 	df.insert(0, 'bias', 1)																									#Bias to not force our model to pass by origin
 
 	a = 0.001																												#Learning rate
@@ -64,17 +77,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-	# try:
-	# 	main(sys.argv[1])
-	# except Exception:
-	# 	traceback.print_exc()
-
-# 0.971875
-
-# 0.965625 Sans rien drop
-# 0.9625 drop seulement HISTORY of magic
-# 0.965625 drop seulement ARITHMANCY
-# 0.971875 drop seulement Care of magical creature
-
-# 0.70625 drop ARITHMANCY et HISTORY of magic
-# 0.971875 drop ARITHMANCY et Care of magical creature

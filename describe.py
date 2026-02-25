@@ -50,9 +50,7 @@ def ft_iqr(col):
 
 def main(path:str):
 	df = pd.read_csv(path, index_col=0)
-	# print(df)
 	df = df.select_dtypes(include=np.number).dropna(axis=1, how='all')
-	# print(df.to_string())
 	index = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max", "Range", "IQR"]
 	df = df.agg([ft_count, ft_mean, ft_std, ft_min, ft_quartile25, ft_quartile50, ft_quartile75, ft_max, ft_range, ft_iqr])
 	df.index = index	
