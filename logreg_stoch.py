@@ -43,7 +43,6 @@ def main():
 	index_house = df.index.get_level_values("Hogwarts House").to_numpy()															#Numpy array of indexes (Hogwart House of each student)
 	index = np.arange(len(df.index))
 	while (i < 10) :
-		# df = df.sample(frac=1)
 		np.random.shuffle(index)
 		for j in index:
 			random_student = df.iloc[j]

@@ -8,15 +8,6 @@ import traceback
 
 # Courbe sigmoide => Double asymptote horinzontale a y=1 et y=-1
 
-# Data selection
-# "Defense against the dark art" IS HIGHLY COROLATED "Astronomy" Can get reed of one (Redondant data)
-# "Arithmancy" DOES NOT SEEMS TO HAVE A COROLATION WITH ANY "THE HOGWART HOUSES"
-# "Care of magical creature" -------------------
-# "Potion" CAN be ignore
-# "Muggle Studies" lower the precisioon
-
-
-#If we want to start the b at 0 we need to take care of dividing by 0
 def sigmoide(x):
     """ Return the value of the sigmoide function at point x """
     x_safe = np.clip(x, -500, 500)
@@ -62,17 +53,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-	# try:
-	# 	main(sys.argv[1])
-	# except Exception:
-	# 	traceback.print_exc()
-
-# 0.971875
-
-# 0.965625 Sans rien drop
-# 0.9625 drop seulement HISTORY of magic
-# 0.965625 drop seulement ARITHMANCY
-# 0.971875 drop seulement Care of magical creature
-
-# 0.70625 drop ARITHMANCY et HISTORY of magic
-# 0.971875 drop ARITHMANCY et Care of magical creature
