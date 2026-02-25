@@ -46,10 +46,8 @@ def main(path:str):
 	df = pd.read_csv(path, index_col=0)
 	print(df)
 	df2 = df.select_dtypes(include=np.number).dropna(axis=1, how='all')
-	# print(df.to_string())
 	print(df2.agg([ft_count, ft_mean, ft_std, ft_min, ft_quartile25, ft_quartile50, ft_quartile75, ft_max]).to_string())
 	return
 
 if __name__ == "__main__":
-	# Check args
 	main(sys.argv[1])

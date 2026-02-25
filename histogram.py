@@ -37,9 +37,6 @@ def main():
     
     houses = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
     
-    # Official Hogwarts House Colors (Lore Accurate)
-    # Gryffindor: Scarlet, Slytherin: Forest Green, 
-    # Ravenclaw: Deep Blue, Hufflepuff: Golden Yellow
     palette = {
         "Gryffindor": "#ae0001",
         "Slytherin": "#2a623d",
