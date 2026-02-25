@@ -1,54 +1,88 @@
-import sys
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import sys
 
-# Create a histogram based on a tab of std by Hogwart house
-# Step 1 Reorder the tab based on each Hogwart House
-# 		if df[Hogwart House] == "house_name":
-# 			put inside new tab ?
-# Step 2 Calculate the the std of each one
-# Step 3 Display the histogram ( std by Hogwart House)
+def main():
+    """Main execution block: parses data, generates histograms for all courses.
 
+    This script identifies which Hogwarts course has a homogeneous score 
+    distribution between all four houses by visualizing all numerical features.
+    It uses official house colors and professional plotting standards.
+    """
+    # Parsing and Error Handling
+    if len(sys.argv) != 2:
+        sys.exit("Usage: python histogram.py <dataset_path>")
 
-def main(path:str):
-	df = pd.read_csv(path, index_col=0)
-	df2 = df.set_index("Hogwarts House", append=True) #Add Hogwart House as index
-	df3 = df2.select_dtypes(include=np.number).dropna(axis=1, how='all') #Drop every NaN columns
-	df_Ravenclaw = df3.xs("Ravenclaw", level=1, drop_level=False)
-	df_Slytherin = df3.xs("Slytherin", level=1, drop_level=False)
-	df_Hufflepuff = df3.xs("Hufflepuff", level=1, drop_level=False)
-	df_Gryffindor = df3.xs("Gryffindor", level=1, drop_level=False)
+    dataset_path = sys.argv[1]
+    
+    try:
+        # Load dataset using Index as the index column
+        df = pd.read_csv(dataset_path, index_col="Index")
+    except Exception as e:
+        sys.exit(f"Error reading dataset: {e}")
 
-	i = 0
-	fig, axs = plt.subplots(4,4)
-	for ax in axs.flat[13:]:
-		ax.set_visible(False)
- 
-	for col in df3.columns:
-		axs[i // 4, i % 4].hist(df_Ravenclaw[col], alpha=0.7)
-		axs[i // 4, i % 4].hist(df_Slytherin[col], alpha=0.7)
-		axs[i // 4, i % 4].hist(df_Hufflepuff[col], alpha=0.7)
-		axs[i // 4, i % 4].hist(df_Gryffindor[col], alpha=0.7)
-		axs[i // 4, i % 4].set_title(col)
-		i += 1
-  
-	for ax in axs[-2, 1:]:
-		ax.set_xlabel("Grade")
-	axs[-1,0].set_xlabel("Grade")
+    # Filter numeric columns and exclude target/metadata
+    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+    
+    # Setup the plot grid (multi-plot layout)
+    n_cols = 4
+    n_rows = (len(numeric_cols) + n_cols - 1) // n_cols
+    
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(22, 5 * n_rows))
+    axes = axes.flatten()
+    
+    houses = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
+    
+    palette = {
+        "Gryffindor": "#ae0001",
+        "Slytherin": "#2a623d",
+        "Ravenclaw": "#222f5b",
+        "Hufflepuff": "#ffdb00"
+    }
 
-	for ax in axs[:, 0]:       # left column → y labels
-		ax.set_ylabel("Number of students")
-	plt.tight_layout()
-	# plt.show()
-	plt.savefig("figure.png")
-	return
+    # Loop through all numerical features to create subplots
+    for i, col in enumerate(numeric_cols):
+        ax = axes[i]
+        
+        # Plot distribution for each house
+        for house in houses:
+            # Clean data: Select house and remove NaNs
+            data = df[df["Hogwarts House"] == house][col].dropna()
+            
+            # Use Seaborn for professional visualization
+            sns.histplot(
+                data, 
+                ax=ax, 
+                label=house, 
+                color=palette.get(house, 'gray'), 
+                kde=True, 
+                element="step", 
+                alpha=0.3
+            )
+        
+        ax.set_title(f"Distribution of {col}", fontsize=12, fontweight='bold')
+        ax.set_xlabel("Scores")
+        ax.set_ylabel("Frequency")
+        ax.legend(prop={'size': 8})
+    
+    # Hide empty subplots if the number of features is not a multiple of n_cols
+    for j in range(i + 1, len(axes)):
+        axes[j].axis('off')
+
+    # Final layout adjustments
+    plt.tight_layout()
+    
+    # Output management
+    output_file = "histogram.png"
+    plt.savefig(output_file)
+    print(f"Histograms saved successfully to {output_file}")
+    
+    try:
+        plt.show()
+    except Exception:
+        print("Non-interactive environment: plot window display skipped.")
 
 if __name__ == "__main__":
-	if (len(sys.argv) != 2):
-		sys.exit("Wrong number of arguments")
-	try:
-		main(sys.argv[1])
-	except:
-		print("File not found")
-    # Better check arg ??
+    main()

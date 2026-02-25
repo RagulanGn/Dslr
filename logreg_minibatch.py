@@ -10,6 +10,7 @@ import random
 #If we want to start the b at 0 we need to take care of dividing by 0
 
 def sigmoide(x):
+    """ Return the value of the sigmoide function at point x """
     x_safe = np.clip(x, -500, 500)
     return (1/(1 + np.exp(-x_safe)))
 

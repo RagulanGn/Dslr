@@ -1,53 +1,116 @@
-import sys
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import sys
 
-# Create a histogram based on a tab of std by Hogwart house
-# Step 1 Reorder the tab based on each Hogwart House
-# 		if df[Hogwart House] == "house_name":
-# 			put inside new tab ?
-# Step 2 Calculate the the std of each one
-# Step 3 Display the histogram ( std by Hogwart House)
+def calculate_mean(data):
+    """Calculates the arithmetic mean of a numeric sequence.
 
+    Args:
+        data (np.array): A sequence of numerical values.
 
-def main(path:str):
-	df = pd.read_csv(path, index_col=0)
-	df2 = df.set_index("Hogwarts House", append=True) #Add Hogwart House as index
-	df3 = df2.select_dtypes(include=np.number).dropna(axis=1, how='all') #Drop every NaN columns
-	df_Ravenclaw = df3.xs("Ravenclaw", level=1, drop_level=False)
-	df_Slytherin = df3.xs("Slytherin", level=1, drop_level=False)
-	df_Hufflepuff = df3.xs("Hufflepuff", level=1, drop_level=False)
-	df_Gryffindor = df3.xs("Gryffindor", level=1, drop_level=False)
+    Returns:
+        float: The mean value.
+    """
+    if len(data) == 0:
+        return 0.0
+    return sum(data) / len(data)
 
-	row_size = 8
-	col_size = 10
-	fig, axs = plt.subplots(row_size,col_size, figsize=(12,8))
-	# for ax in axs.flat[13:]:
-		# ax.set_visible(False)
+def calculate_correlation(x, y):
+    """Calculates the Pearson correlation coefficient between two variables.
 
-	i = 0
+    This function excludes NaN values and computes the correlation manually
+    to adhere to project constraints regarding heavy-lifting functions.
 
-	for j, colx in enumerate(df3.columns):
-		for coly in df3.columns[j + 1:]:
-			axs[i // col_size, i % col_size].scatter(df_Ravenclaw[colx],df_Ravenclaw[coly], s=5)
-			axs[i // col_size, i % col_size].scatter(df_Slytherin[colx],df_Slytherin[coly], s=5)
-			axs[i // col_size, i % col_size].scatter(df_Hufflepuff[colx],df_Hufflepuff[coly], s=5)
-			axs[i // col_size, i % col_size].scatter(df_Gryffindor[colx],df_Gryffindor[coly], s=5)
-			axs[i // col_size, i % col_size].tick_params(labelbottom=False, labelleft=False)
-			i += 1
-	# plt.tight_layout()
-	# plt.show()
-	plt.savefig("figure2.png")
-	return
+    Args:
+        x (np.array): First numerical sequence.
+        y (np.array): Second numerical sequence.
+
+    Returns:
+        float: Pearson correlation coefficient ranging from -1 to 1.
+    """
+    mask = ~np.isnan(x) & ~np.isnan(y)
+    x_c = x[mask]
+    y_c = y[mask]
+    
+    if len(x_c) < 2:
+        return 0.0
+
+    mu_x = calculate_mean(x_c)
+    mu_y = calculate_mean(y_c)
+
+    numerator = sum((x_c - mu_x) * (y_c - mu_y))
+    denominator = np.sqrt(sum((x_c - mu_x)**2) * sum((y_c - mu_y)**2))
+
+    if denominator == 0:
+        return 0.0
+    return numerator / denominator
+
+def main():
+    """Main execution block: parses data, finds similar features, and plots."""
+    if len(sys.argv) != 2:
+        sys.exit("Usage: python scatter_plot.py <dataset_path>")
+
+    dataset_path = sys.argv[1]
+    
+    try:
+        df = pd.read_csv(dataset_path, index_col="Index")
+    except Exception as e:
+        sys.exit(f"Error reading dataset: {e}")
+
+    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+    
+    max_corr = -1.0
+    best_pair = (None, None)
+
+    for i in range(len(numeric_cols)):
+        for j in range(i + 1, len(numeric_cols)):
+            f1, f2 = numeric_cols[i], numeric_cols[j]
+            corr_val = calculate_correlation(df[f1].values, df[f2].values)
+            
+            if abs(corr_val) > max_corr:
+                max_corr = abs(corr_val)
+                best_pair = (f1, f2)
+
+    feat1, feat2 = best_pair
+    print(f"Features identified: '{feat1}' and '{feat2}'")
+    print(f"Pearson Correlation Coefficient: {max_corr:.4f}")
+
+    # Official Hogwarts House Colors (Lore Accurate)
+    palette = {
+        "Gryffindor": "#ae0001",
+        "Slytherin": "#2a623d",
+        "Ravenclaw": "#222f5b",
+        "Hufflepuff": "#ffdb00"
+    }
+
+    plt.figure(figsize=(10, 7))
+    sns.scatterplot(
+        data=df, 
+        x=feat1, 
+        y=feat2, 
+        hue="Hogwarts House", 
+        palette=palette, 
+        alpha=0.6,
+        edgecolor='w'
+    )
+
+    plt.title(f"Scatter Plot: {feat1} vs {feat2}\n(Highest correlation detected)")
+    plt.xlabel(feat1)
+    plt.ylabel(feat2)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    
+    # Save the plot for environments without GUI
+    output_name = "scatter_plot.png"
+    plt.savefig(output_name)
+    print(f"Plot saved as {output_name}")
+    
+    try:
+        plt.show()
+    except Exception:
+        print("Non-interactive environment detected: skipping window display.")
 
 if __name__ == "__main__":
-	if (len(sys.argv) != 2):
-		sys.exit("Wrong number of arguments")
-	main(sys.argv[1])
-	
-	# try:
-		# main(sys.argv[1])
-	# except:
-		# print("File not found")
-    # Better check arg ??
+    main()

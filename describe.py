@@ -48,23 +48,22 @@ def ft_range(col):
 def ft_iqr(col):
     return (ft_quartile75(col) - ft_quartile50(col))
 
-def main(path:str):
-	df = pd.read_csv(path, index_col=0)
-	# print(df)
+def main():
+	try:
+		if (len(sys.argv) != 2):
+			sys.exit("Wrong number of arguments")
+		df = pd.read_csv(sys.argv[1], index_col=0)
+	except (FileNotFoundError, PermissionError, pd.errors.EmptyDataError, pd.errors.ParserError):
+		sys.exit("Incorrect path or file.")
+
 	df = df.select_dtypes(include=np.number).dropna(axis=1, how='all')
-	# print(df.to_string())
 	index = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max", "Range", "IQR"]
 	df = df.agg([ft_count, ft_mean, ft_std, ft_min, ft_quartile25, ft_quartile50, ft_quartile75, ft_max, ft_range, ft_iqr])
-	df.index = index	
+	df.index = index
 	print(df.to_string())
 	return
 
 if __name__ == "__main__":
-	if (len(sys.argv) != 2):
-		sys.exit("Wrong number of arguments")
-	try:
-		main(sys.argv[1])
-	except:
-		print("File not found")
+	main()
   
 # Better arg checking ?
