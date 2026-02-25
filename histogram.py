@@ -11,7 +11,6 @@ def main():
     distribution between all four houses by visualizing all numerical features.
     It uses official house colors and professional plotting standards.
     """
-    # Parsing and Error Handling
     if len(sys.argv) != 2:
         print("Usage: python histogram.py <dataset_path>")
         sys.exit(1)
@@ -19,16 +18,13 @@ def main():
     dataset_path = sys.argv[1]
     
     try:
-        # Load dataset using Index as the index column
         df = pd.read_csv(dataset_path, index_col="Index")
     except Exception as e:
         print(f"Error reading dataset: {e}")
         sys.exit(1)
 
-    # Filter numeric columns and exclude target/metadata
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
     
-    # Setup the plot grid (multi-plot layout)
     n_cols = 4
     n_rows = (len(numeric_cols) + n_cols - 1) // n_cols
     
@@ -44,16 +40,12 @@ def main():
         "Hufflepuff": "#ffdb00"
     }
 
-    # Loop through all numerical features to create subplots
     for i, col in enumerate(numeric_cols):
         ax = axes[i]
         
-        # Plot distribution for each house
         for house in houses:
-            # Clean data: Select house and remove NaNs
             data = df[df["Hogwarts House"] == house][col].dropna()
             
-            # Use Seaborn for professional visualization
             sns.histplot(
                 data, 
                 ax=ax, 
@@ -69,18 +61,17 @@ def main():
         ax.set_ylabel("Frequency")
         ax.legend(prop={'size': 8})
     
-    # Hide empty subplots if the number of features is not a multiple of n_cols
     for j in range(i + 1, len(axes)):
         axes[j].axis('off')
 
-    # Final layout adjustments
-    # plt.tight_layout()
     
-    # Output management
     output_file = "histogram.png"
     plt.savefig(output_file)
     plt.show()
     print(f"Histograms saved successfully to {output_file}")
     
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        sys.exit(f"Error : {e}")

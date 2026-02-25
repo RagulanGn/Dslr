@@ -8,15 +8,6 @@ import traceback
 
 # Courbe sigmoide => Double asymptote horinzontale a y=1 et y=-1
 
-# Data selection
-# "Defense against the dark art" IS HIGHLY COROLATED "Astronomy" Can get reed of one (Redondant data)
-# "Arithmancy" DOES NOT SEEMS TO HAVE A COROLATION WITH ANY "THE HOGWART HOUSES"
-# "Care of magical creature" -------------------
-# "Potion" CAN be ignore
-# "Muggle Studies" lower the precisioon
-
-
-#If we want to start the b at 0 we need to take care of dividing by 0
 def ft_count(col):
     return (col.notna().sum())
 
@@ -76,4 +67,7 @@ def main():
 	return
 
 if __name__ == "__main__":
-	main()
+    try:
+        main()
+    except Exception as e:
+        sys.exit(f"Error : {e}")

@@ -65,4 +65,3 @@ if __name__ == "__main__":
 	except:
 		print("File not found")
   
-# Better arg checking ?

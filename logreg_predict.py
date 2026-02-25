@@ -62,38 +62,7 @@ def main():
 	return
 
 if __name__ == "__main__":
-	main()
-
-
-
-#--------------------------------------------------------------------------------------------------------------------------------------------------------#
-
-# Fill Both with 0 (0.961875)
-# Fill only test 0 (0.960625)
-# Fill both with mean (0.9625)
-# Fill train with mean and test with 0 (0.98)
-
-
-# avec potion + 3 autres (0.98) Full set
-# dataset = dataset.drop(columns=["Arithmancy", "Astronomy", "Care of Magical Creatures", "Potions"])
-
-#0.9718
-
-
-# dataset : Slytherin / prediction : Ravenclaw
-# dataset : Slytherin / prediction : Ravenclaw
-# dataset : Slytherin / prediction : Ravenclaw
-# dataset : Slytherin / prediction : Hufflepuff
-# dataset : Gryffindor / prediction : Hufflepuff
-# dataset : Gryffindor / prediction : Hufflepuff
-# dataset : Gryffindor / prediction : Ravenclaw
-# dataset : Gryffindor / prediction : Ravenclaw
-# dataset : Ravenclaw / prediction : Hufflepuff
-
-# 4 * Ravenclaw instead of 	Slytherin
-# 1 * Hufflepuff instead of Slytherin
-# 2 * Hufflepuff instead of Gryffindor
-# 2 * Ravenclaw instead of  Gryffindor
-# 1 * Hufflepuff instead of Ravenclaw
-
-# ==> Meaning my model is detecting too much Ravenclaw and Hufflepuff ==> maybe because they are overrepresented inside th training
+    try:
+        main()
+    except Exception as e:
+        sys.exit(f"Error : {e}")

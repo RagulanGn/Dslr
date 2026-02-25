@@ -4,10 +4,16 @@ import numpy as np
 import traceback
 import random
 
-# Descente de gradient Stochastique -> Update des parametres b apres chaque data
-# !!Attention il vaut mieux random l ordre du tableau que l index pour etre sur que toute les datas est une influence!!
+def ft_count(col):
+    return (col.notna().sum())
 
-#If we want to start the b at 0 we need to take care of dividing by 0
+def ft_mean(col):
+    return col.sum() / ft_count(col)
+
+def ft_std(col):
+    mean = ft_mean(col)
+    d2 = abs(col - mean) ** 2
+    return (d2.sum() / (ft_count(col) - 1)) ** 0.5
 
 def sigmoide(x):
     x_safe = np.clip(x, -500, 500)
@@ -30,8 +36,8 @@ def main():
 	df = df.drop(columns=["Arithmancy", "Care of Magical Creatures"])														#Drop 2 columns because they are not vector of any information but create noise
 	df = df.fillna(df.median())																								#Replace NaN with median
 
-	mean = df.mean()
-	std = df.std()
+	mean = ft_mean(df)
+	std = ft_std(df)
 	df = (df - mean) / std																									#Standardization to avoid overflow
 	# df = df[:int(len(df.index) * 0.8)]																					#Take 80% of train to allows to evaluate our model with the other 20% (Calculate accuracy score)
 	df.insert(0, 'bias', 1)																									#Bias to not force our model to pass by origin
@@ -57,4 +63,7 @@ def main():
 	return
 
 if __name__ == "__main__":
-	main()
+    try:
+        main()
+    except Exception as e:
+        sys.exit(f"Error : {e}")

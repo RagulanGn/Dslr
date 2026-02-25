@@ -79,7 +79,6 @@ def main():
     print(f"Features identified: '{feat1}' and '{feat2}'")
     print(f"Pearson Correlation Coefficient: {max_corr:.4f}")
 
-    # Official Hogwarts House Colors (Lore Accurate)
     palette = {
         "Gryffindor": "#ae0001",
         "Slytherin": "#2a623d",
@@ -104,7 +103,6 @@ def main():
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.tight_layout()
     
-    # Save the plot for environments without GUI
     output_name = "scatter_plot.png"
     plt.savefig(output_name)
     plt.show()
@@ -112,4 +110,7 @@ def main():
     
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        sys.exit(f"Error : {e}")

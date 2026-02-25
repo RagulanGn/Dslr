@@ -32,7 +32,6 @@ def main():
     }
     print("Generating pair plot... (this might take a while)")
     
-    # Pair plot
     sns.pairplot(
         df_clean[numeric_cols + ["Hogwarts House"]],
         hue="Hogwarts House",
@@ -46,4 +45,7 @@ def main():
     print("Pair plot saved to pair_plot.png")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        sys.exit(f"Error : {e}")
