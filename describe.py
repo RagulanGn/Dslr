@@ -14,39 +14,47 @@ def ft_std(col):
     return (d2.sum() / (ft_count(col) - 1)) ** 0.5
 
 def ft_min(col):
-    min = col[0]
-    for i in col:
-        if (min > i):
-            min = i
-    return  min
+    clean = col.dropna()
+    min_val = clean[0]
+    for i in clean:
+        if (min_val > i):
+            min_val = i
+    return  min_val
 
 def ft_quartile25(col):
     sorted_col = col.sort_values().reset_index(drop=True)
     percent25 = (ft_count(col)) * 0.25
-    return ((1 - percent25 % 1) * sorted_col[percent25 // 1 - 1]) + ((percent25 % 1) * sorted_col[percent25 // 1])
+    low = ((1 - percent25 % 1) * sorted_col.iloc[int(percent25 // 1 - 1)])
+    high = ((percent25 % 1) * sorted_col.iloc[int(percent25 // 1)])
+    return low + high
 
 def ft_quartile50(col):
     sorted_col = col.sort_values().reset_index(drop=True)
     percent50 = (ft_count(col)) * 0.5
-    return (( 1 - percent50 % 1) * sorted_col[percent50 // 1 - 1]) + ((percent50 % 1) * sorted_col[percent50 // 1 ])
+    low = (( 1 - percent50 % 1) * sorted_col.iloc[int(percent50 // 1 - 1)])
+    high = ((percent50 % 1) * sorted_col.iloc[int(percent50 // 1)])
+    return low + high
 
 def ft_quartile75(col):
     sorted_col = col.sort_values().reset_index(drop=True)
     percent75 = (ft_count(col)) * 0.75
-    return (( 1 - percent75 % 1) * sorted_col[percent75 // 1 - 1]) + ((percent75 % 1) * sorted_col[percent75 // 1])
+    low = ((1 - percent75 % 1) * sorted_col.iloc[int(percent75 // 1 - 1)])
+    high = ((percent75 % 1) * sorted_col.iloc[int(percent75 // 1)])
+    return low + high
 
 def ft_max(col):
-    max = col[0]
-    for i in col:
-        if (max < i):
-            max = i
-    return  max
+    clean = col.dropna()
+    max_val = col[0]
+    for i in clean:
+        if (max_val < i):
+            max_val = i
+    return  max_val
 
 def ft_range(col):
     return (ft_max(col) - ft_min(col))
 
 def ft_iqr(col):
-    return (ft_quartile75(col) - ft_quartile50(col))
+    return (ft_quartile75(col) - ft_quartile25(col))
 
 def main(path:str):
 	df = pd.read_csv(path, index_col=0)
@@ -62,6 +70,7 @@ if __name__ == "__main__":
 		sys.exit("Wrong number of arguments")
 	try:
 		main(sys.argv[1])
-	except:
-		print("File not found")
-  
+	except FileNotFoundError:
+		sys.exit("File not found")
+	except Exception as e:
+		sys.exit(f"Error: {e}")
