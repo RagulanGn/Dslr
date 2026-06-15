@@ -3,58 +3,58 @@ import pandas as pd
 import sys
 
 def ft_count(col) -> int:
-    return (int) (col.notna().sum())
+	return int(col.notna().sum())
 
 def ft_mean(col):
-    return col.sum() / ft_count(col)
+	return col.sum() / ft_count(col)
 
 def ft_std(col):
-    mean = ft_mean(col)
-    d2 = abs(col - mean) ** 2
-    return (d2.sum() / (ft_count(col) - 1)) ** 0.5
+	mean = ft_mean(col)
+	d2 = abs(col - mean) ** 2
+	return (d2.sum() / (ft_count(col) - 1)) ** 0.5
 
 def ft_min(col):
-    clean = col.dropna()
-    min_val = clean[0]
-    for i in clean:
-        if (min_val > i):
-            min_val = i
-    return  min_val
+	clean = col.dropna()
+	min_val = clean.iloc[0]
+	for i in clean:
+		if (min_val > i):
+			min_val = i
+	return  min_val
 
 def ft_quartile25(col):
-    sorted_col = col.sort_values().reset_index(drop=True)
-    percent25 = (ft_count(col)) * 0.25
-    low = ((1 - percent25 % 1) * sorted_col.iloc[int(percent25 // 1 - 1)])
-    high = ((percent25 % 1) * sorted_col.iloc[int(percent25 // 1)])
-    return low + high
+	sorted_col = col.sort_values().reset_index(drop=True)
+	percent25 = (ft_count(col)) * 0.25
+	low = ((1 - percent25 % 1) * sorted_col.iloc[int(percent25 // 1 - 1)])
+	high = ((percent25 % 1) * sorted_col.iloc[int(percent25 // 1)])
+	return low + high
 
 def ft_quartile50(col):
-    sorted_col = col.sort_values().reset_index(drop=True)
-    percent50 = (ft_count(col)) * 0.5
-    low = (( 1 - percent50 % 1) * sorted_col.iloc[int(percent50 // 1 - 1)])
-    high = ((percent50 % 1) * sorted_col.iloc[int(percent50 // 1)])
-    return low + high
+	sorted_col = col.sort_values().reset_index(drop=True)
+	percent50 = (ft_count(col)) * 0.5
+	low = (( 1 - percent50 % 1) * sorted_col.iloc[int(percent50 // 1 - 1)])
+	high = ((percent50 % 1) * sorted_col.iloc[int(percent50 // 1)])
+	return low + high
 
 def ft_quartile75(col):
-    sorted_col = col.sort_values().reset_index(drop=True)
-    percent75 = (ft_count(col)) * 0.75
-    low = ((1 - percent75 % 1) * sorted_col.iloc[int(percent75 // 1 - 1)])
-    high = ((percent75 % 1) * sorted_col.iloc[int(percent75 // 1)])
-    return low + high
+	sorted_col = col.sort_values().reset_index(drop=True)
+	percent75 = (ft_count(col)) * 0.75
+	low = ((1 - percent75 % 1) * sorted_col.iloc[int(percent75 // 1 - 1)])
+	high = ((percent75 % 1) * sorted_col.iloc[int(percent75 // 1)])
+	return low + high
 
 def ft_max(col):
-    clean = col.dropna()
-    max_val = col[0]
-    for i in clean:
-        if (max_val < i):
-            max_val = i
-    return  max_val
+	clean = col.dropna()
+	max_val = clean.iloc[0]
+	for i in clean:
+		if (max_val < i):
+			max_val = i
+	return  max_val
 
 def ft_range(col):
-    return (ft_max(col) - ft_min(col))
+	return (ft_max(col) - ft_min(col))
 
 def ft_iqr(col):
-    return (ft_quartile75(col) - ft_quartile25(col))
+	return (ft_quartile75(col) - ft_quartile25(col))
 
 def main(path:str):
 	df = pd.read_csv(path, index_col=0)

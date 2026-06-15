@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+houses.csv
+histogram.png
+scatter_plot.png
+pair_plot.png
